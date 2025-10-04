@@ -1,0 +1,43 @@
+spring:
+  cloud.gateway:
+    server.webflux:
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 5s
+        pool:
+          max-idle-time: 5s
+      routes:
+        # routes
+        #- id: # service
+        #  predicates:
+        #  uri:
+        #  metadata:
+        #    response-timeout: 5000
+        #    connect-timeout: 2000
+        #    # TODO: прописать роутсы для теста и протестить приложение
+        - id: govno
+          uri: http://localhost:8081
+          predicates:
+            - Path=/**
+  main:
+    web-application-type: reactive
+
+jwt:
+  public-key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvvjGIjYfZnEfaQkLD9LgsMtuJpDOvHy/tbMJJvghxZRShZpx1PRTMWOGRefJ/vJAVdg8jBtfpyJYTYW+X/36jO7coX/u87L//PJDgrtjjloLYM8p5d0oWxyJf71Cb0IWIX89yNCt99wFJv0wDTpmmU3IOpBO0/st3gk66Wh3XfWD3aoKnD9dZpDRzivyThAnsqdOMn+hor1C0cjN+U+zCyRvUaSr/K6+LdlVPBUZVfTuwOFTUIXF6bTQP46Bs6lMMpLs8w8K1M7phEpHAlTb1sG3XZsp9SFFibxB0LVtoYyiiMjr+mz7khiCGgd1N3JT7ztCyWEZUd+lyMcpfhnkQQIDAQAB"
+
+server:
+  port: 8081
+
+security:
+  public-endpoints:
+    any-method:
+      - /auth/**
+      - /swagger-ui/**
+      - /v3/api-docs/**
+      - /v3/api-docs.yaml
+    get-only:
+      - /questions/*
+      - /questions/*/answer
+      - /questions/*/comments
+      - /topic
+      - /topic/*
