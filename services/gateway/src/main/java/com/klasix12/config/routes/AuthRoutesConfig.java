@@ -33,7 +33,15 @@ public class AuthRoutesConfig {
                         .and().method(HttpMethod.POST)
                         .uri(uri))
 
+                .route(service, r -> r.path("/auth/logout")
+                        .and().method(HttpMethod.POST)
+                        .uri(uri))
+
                 .route(service, r -> r.path("/auth/asdadadada")
+                        .and().method(HttpMethod.GET)
+                        .uri(uri))
+
+                .route(service, r -> r.path("/test")
                         .and().method(HttpMethod.GET)
                         .uri(uri))
                 .build();

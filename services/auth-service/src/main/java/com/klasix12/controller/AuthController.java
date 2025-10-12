@@ -3,7 +3,6 @@ package com.klasix12.controller;
 import com.klasix12.dto.*;
 import com.klasix12.service.AuthService;
 import com.klasix12.service.UserService;
-import com.klasix12.service.impl.JwtProvider;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
-    private final JwtProvider jwtProvider;
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody AuthRequest req) {
@@ -40,9 +38,15 @@ public class AuthController {
                 .ok(authService.refresh(accessToken, req));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestHeader(value = "Authorization") String accessToken,
+                                       @Valid @RequestBody RefreshTokenRequest req) {
+        authService.logout(accessToken, req);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/asdadadada")
-    public ResponseEntity<String> asdadadada(@RequestHeader("Authorization") String auth) {
-        System.out.println(jwtProvider.extractUser(auth));
+    public ResponseEntity<String> asdadadada() {
         return ResponseEntity.ok().body("asdadadada");
     }
 }

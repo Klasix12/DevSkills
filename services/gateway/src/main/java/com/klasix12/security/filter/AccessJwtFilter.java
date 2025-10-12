@@ -1,6 +1,7 @@
 package com.klasix12.security.filter;
 
 import com.klasix12.config.PublicEndpointsConfig;
+import com.klasix12.dto.Constants;
 import com.klasix12.redis.RedisService;
 import com.klasix12.security.service.TokenManager;
 import lombok.AllArgsConstructor;
@@ -42,34 +43,46 @@ public class AccessJwtFilter implements GlobalFilter {
         }
 
         String token = authHeaderValue.substring(tokenPrefix.length());
+        String blacklistKey = Constants.ACCESS_TOKEN_BLACKLIST_PREFIX + token;
 
-        return tokenManager.isAccessTokenValid(token)
-                .flatMap(isValid -> {
-                    if (Boolean.TRUE.equals(isValid)) {
-                        return Mono.zip(
-                                tokenManager.extractId(token),
-                                tokenManager.extractUsername(token),
-                                tokenManager.extractRoles(token)
-                        ).flatMap(tuple -> {
-                            String userId = tuple.getT1();
-                            String username = tuple.getT2();
-                            List<String> userRoles = tuple.getT3();
+        System.out.println(blacklistKey);
 
-                            ServerWebExchange mutated = exchange.mutate()
-                                    .request(req -> req.headers(headers -> {
-                                        headers.add("X-User-Id", userId);
-                                        headers.add("X-User-Name", username);
-                                        headers.add("X-User-Roles", String.join(",", userRoles));
-                                    }))
-                                    .build();
-                            return chain.filter(mutated);
-                        });
-                    } else {
-                        return unauthorized(exchange, "Invalid or expired JWT token");
+        return redisService.exists(blacklistKey)
+                .flatMap(isBlacklisted -> {
+                    if (Boolean.TRUE.equals(isBlacklisted)) {
+                        return unauthorized(exchange, "Token is blacklisted (logged out)");
                     }
+
+                    return tokenManager.isAccessTokenValid(token)
+                            .flatMap(isValid -> {
+                                if (Boolean.TRUE.equals(isValid)) {
+                                    return Mono.zip(
+                                            tokenManager.extractId(token),
+                                            tokenManager.extractUsername(token),
+                                            tokenManager.extractRoles(token)
+                                    ).flatMap(tuple -> {
+                                        String userId = tuple.getT1();
+                                        String username = tuple.getT2();
+                                        List<String> userRoles = tuple.getT3();
+
+                                        ServerWebExchange mutated = exchange.mutate()
+                                                .request(req -> req.headers(headers -> {
+                                                    headers.add("X-User-Id", userId);
+                                                    headers.add("X-User-Name", username);
+                                                    headers.add("X-User-Roles", String.join(",", userRoles));
+                                                }))
+                                                .build();
+
+                                        return chain.filter(mutated);
+                                    });
+                                } else {
+                                    return unauthorized(exchange, "Invalid or expired JWT token");
+                                }
+                            });
                 })
                 .onErrorResume(throwable -> unauthorized(exchange, "Token validation error: " + throwable.getMessage()));
     }
+
 
     private boolean isPublicEndpoint(ServerWebExchange exchange) {
         String method = exchange.getRequest().getMethod().name();

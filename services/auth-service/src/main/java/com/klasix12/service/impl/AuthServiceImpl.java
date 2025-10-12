@@ -36,24 +36,35 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Refresh token is null");
         }
         if (redisService.isBlacklisted(Constants.REFRESH_REDIS_BLACKLIST_PREFIX + req.getRefreshToken())) {
+            // TODO: need custom exception
             throw new RuntimeException("Refresh token is blacklisted");
         }
         String refreshToken = req.getRefreshToken();
-        long refreshTtlSeconds = extractTtlSeconds(refreshToken);
-        TokenResponse tokenResponse = new TokenResponse();
-
-        redisService.blacklistToken(Constants.REFRESH_REDIS_BLACKLIST_PREFIX + refreshToken, refreshTtlSeconds);
-
+        blacklistRefreshToken(refreshToken);
         if (accessTokenHeader != null) {
-            String accessToken = extractAccessTokenFromHeader(accessTokenHeader);
-            long accessTtlSeconds = extractTtlSeconds(accessToken);
-            redisService.blacklistToken(Constants.ACCESS_TOKEN_BLACKLIST_PREFIX + accessToken, accessTtlSeconds);
+            blacklistAccessToken(accessTokenHeader);
         }
-        String newAccessToken = jwtProvider.generateAccessToken(jwtProvider.extractUser(refreshToken));
-        tokenResponse.setAccessToken(newAccessToken);
-        String newRefreshToken = jwtProvider.generateRefreshToken(jwtProvider.extractUser(refreshToken));
-        tokenResponse.setRefreshToken(newRefreshToken);
-        return tokenResponse;
+        return TokenResponse.builder()
+                .accessToken(jwtProvider.generateAccessToken(jwtProvider.extractUser(refreshToken)))
+                .refreshToken(jwtProvider.generateRefreshToken(jwtProvider.extractUser(refreshToken)))
+                .build();
+    }
+
+    @Override
+    public void logout(String accessTokenHeader, RefreshTokenRequest req) {
+        blacklistAccessToken(accessTokenHeader);
+        blacklistRefreshToken(req.getRefreshToken());
+    }
+
+    private void blacklistAccessToken(String accessTokenHeader) {
+        String accessToken = extractAccessTokenFromHeader(accessTokenHeader);
+        long accessTtlSeconds = extractTtlSeconds(accessToken);
+        redisService.blacklistToken(Constants.ACCESS_TOKEN_BLACKLIST_PREFIX + accessToken, accessTtlSeconds);
+    }
+
+    private void blacklistRefreshToken(String refreshToken) {
+        long refreshTtlSeconds = extractTtlSeconds(refreshToken);
+        redisService.blacklistToken(Constants.REFRESH_REDIS_BLACKLIST_PREFIX + refreshToken, refreshTtlSeconds);
     }
 
     private long extractTtlSeconds(String token) {
@@ -63,7 +74,6 @@ public class AuthServiceImpl implements AuthService {
 
     private String extractAccessTokenFromHeader(String token) {
         String headerPrefix = "Bearer ";
-        System.out.println(token.substring(headerPrefix.length()));
         return token.substring(headerPrefix.length());
     }
 }
