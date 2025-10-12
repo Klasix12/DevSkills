@@ -1,5 +1,6 @@
 package com.klasix12.security.service;
 
+import com.klasix12.dto.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,22 +13,16 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class JwtProvider {
 
     private final PublicKey publicKey;
-    private final String algorithm = "RSA";
 
     public JwtProvider(@Value("${jwt.public-key}") String publicKeyBase64) throws Exception {
-        this.publicKey = loadPublicKey(publicKeyBase64);
-    }
-
-    private PublicKey loadPublicKey(String publicKeyBase64) throws Exception {
-        byte[] encoded = Base64.getDecoder().decode(publicKeyBase64);
-        KeyFactory kf = KeyFactory.getInstance(algorithm);
-        return kf.generatePublic(new X509EncodedKeySpec(encoded));
+        byte[] decoded = Base64.getDecoder().decode(publicKeyBase64);
+        KeyFactory kf = KeyFactory.getInstance(Constants.ALGORITHM);
+        this.publicKey = kf.generatePublic(new X509EncodedKeySpec(decoded));
     }
 
     public Claims extractAllClaims(String token) {

@@ -1,6 +1,8 @@
 package com.klasix12.security.filter;
 
 import com.klasix12.config.PublicEndpointsConfig;
+import com.klasix12.redis.ReactiveRedisService;
+import com.klasix12.redis.RedisService;
 import com.klasix12.security.service.TokenManager;
 import lombok.AllArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -15,16 +17,18 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class JwtWebFilter implements GlobalFilter {
+public class AccessJwtFilter implements GlobalFilter {
 
     private final TokenManager tokenManager;
     private final PublicEndpointsConfig publicEndpointsConfig;
     private final String authHeaderKey = "Authorization";
     private final String tokenPrefix = "Bearer ";
     private final PathPatternParser parser = new PathPatternParser();
+    private final RedisService redisService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -43,20 +47,29 @@ public class JwtWebFilter implements GlobalFilter {
         return tokenManager.isAccessTokenValid(token)
                 .flatMap(isValid -> {
                     if (Boolean.TRUE.equals(isValid)) {
-                        return chain.filter(exchange);
+                        return Mono.zip(
+                                tokenManager.extractId(token),
+                                tokenManager.extractUsername(token),
+                                tokenManager.extractRoles(token)
+                        ).flatMap(tuple -> {
+                            String userId = tuple.getT1();
+                            String username = tuple.getT2();
+                            List<String> userRoles = tuple.getT3();
+
+                            ServerWebExchange mutated = exchange.mutate()
+                                    .request(req -> req.headers(headers -> {
+                                        headers.add("X-User-Id", userId);
+                                        headers.add("X-User-Name", username);
+                                        headers.add("X-User-Roles", String.join(",", userRoles));
+                                    }))
+                                    .build();
+                            return chain.filter(mutated);
+                        });
                     } else {
                         return unauthorized(exchange, "Invalid or expired JWT token");
                     }
                 })
                 .onErrorResume(throwable -> unauthorized(exchange, "Token validation error: " + throwable.getMessage()));
-    }
-
-    private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {
-        ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
-        byte[] bytes = ("{\"error\":\"" + message + "\"}").getBytes(StandardCharsets.UTF_8);
-        response.getHeaders().add("Content-Type", "application/json");
-        return response.writeWith(Mono.just(response.bufferFactory().wrap(bytes)));
     }
 
     private boolean isPublicEndpoint(ServerWebExchange exchange) {
@@ -77,5 +90,13 @@ public class JwtWebFilter implements GlobalFilter {
                     .anyMatch(pattern -> pattern.matches(path));
         }
         return true;
+    }
+
+    private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        byte[] bytes = ("{\"error\":\"" + message + "\"}").getBytes(StandardCharsets.UTF_8);
+        response.getHeaders().add("Content-Type", "application/json");
+        return response.writeWith(Mono.just(response.bufferFactory().wrap(bytes)));
     }
 }

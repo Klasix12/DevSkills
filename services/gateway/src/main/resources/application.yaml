@@ -7,26 +7,25 @@ spring:
         pool:
           max-idle-time: 5s
       routes:
-        # routes
-        #- id: # service
-        #  predicates:
-        #  uri:
-        #  metadata:
-        #    response-timeout: 5000
-        #    connect-timeout: 2000
-        #    # TODO: прописать роутсы для теста и протестить приложение
-        - id: govno
+        - id: example
           uri: http://localhost:8081
           predicates:
             - Path=/**
   main:
     web-application-type: reactive
+  data:
+    redis:
+      host: localhost
+      port: 6544
+      timeout: 500ms
+      client-type: lettuce
+      password: pass
 
+# for example
 jwt:
-  public-key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvvjGIjYfZnEfaQkLD9LgsMtuJpDOvHy/tbMJJvghxZRShZpx1PRTMWOGRefJ/vJAVdg8jBtfpyJYTYW+X/36jO7coX/u87L//PJDgrtjjloLYM8p5d0oWxyJf71Cb0IWIX89yNCt99wFJv0wDTpmmU3IOpBO0/st3gk66Wh3XfWD3aoKnD9dZpDRzivyThAnsqdOMn+hor1C0cjN+U+zCyRvUaSr/K6+LdlVPBUZVfTuwOFTUIXF6bTQP46Bs6lMMpLs8w8K1M7phEpHAlTb1sG3XZsp9SFFibxB0LVtoYyiiMjr+mz7khiCGgd1N3JT7ztCyWEZUd+lyMcpfhnkQQIDAQAB"
+  public-key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxvKD2M7i9aEYmDI8fTYdBnZS9BsptPH9lW1Upn+0waI8S5F6am0at9CPfS10PAmzHcKSnwNI0+pUPEGClITE8gfZYTNegH/1UO1d5xSaorbICh9OhZGidDM4OzgW+coAddQgnjU5C9NG21ybsrNe9Dt5iU9CLDzmgQzl0xN2YDwrFyuzCCnIJvCdy3zLD9VrZ84S3H+bgzOGEbPawgBY6uvLKXu9GKrj85nVaq5XanEouPqBCD/k1uF+JLtz8ac3QX9wsxYONmEySuc4uoL/fcjOhI92HYVTT4YbK5Bu4+t/fvh1ga3hUhvPk4xyel/pXwyo/asntb1ETKeSwn8vNQIDAQAB"
 
-server:
-  port: 8081
+server.port: 8081
 
 security:
   public-endpoints:

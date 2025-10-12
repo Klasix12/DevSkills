@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DevSkillsGatewayApplication {
+public class UserServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DevSkillsGatewayApplication.class, args);
+        SpringApplication.run(UserServiceApplication.class, args);
     }
 }
