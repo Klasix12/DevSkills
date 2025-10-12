@@ -1,7 +1,6 @@
 package com.klasix12.security.filter;
 
 import com.klasix12.config.PublicEndpointsConfig;
-import com.klasix12.redis.ReactiveRedisService;
 import com.klasix12.redis.RedisService;
 import com.klasix12.security.service.TokenManager;
 import lombok.AllArgsConstructor;

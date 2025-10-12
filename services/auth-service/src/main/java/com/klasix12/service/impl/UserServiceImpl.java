@@ -1,12 +1,13 @@
 package com.klasix12.service.impl;
 
-import com.klasix12.dto.*;
+import com.klasix12.dto.AuthRequest;
+import com.klasix12.dto.UserDto;
+import com.klasix12.dto.UserRegistrationRequest;
+import com.klasix12.dto.UserRegistrationResponse;
 import com.klasix12.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.List;
 
 @Slf4j
 @Service

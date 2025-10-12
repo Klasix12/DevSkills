@@ -1,4 +1,4 @@
-spring:
+s]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]pring:
   cloud.gateway:
     server.webflux:
       httpclient:
@@ -40,3 +40,4 @@ security:
       - /questions/*/comments
       - /topic
       - /topic/*
+      -
