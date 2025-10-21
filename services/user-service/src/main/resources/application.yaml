@@ -2,7 +2,7 @@ server.port: 8083
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:6541/devskills
+    url: jdbc:postgresql://localhost:6541/devskills-users
     username: user
     password: pass
   jpa:

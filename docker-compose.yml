@@ -1,19 +1,36 @@
 services:
-  db:
+  users-db:
     image: postgres:16.1
-    container_name: devskills-db
+    container_name: devskills-users-db
     ports:
       - "6541:5432"
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=devskills
+      - POSTGRES_DB=devskills-users
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
       retries: 10
     restart: unless-stopped
+
+  questions-db:
+    image: postgres:16.1
+    container_name: devskills-questions-db
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=devskills-questions
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
   redis:
     image: redis:8.0.2-alpine
     container_name: devskills-redis

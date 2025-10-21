@@ -67,9 +67,9 @@ public class AccessJwtFilter implements GlobalFilter {
 
                                         ServerWebExchange mutated = exchange.mutate()
                                                 .request(req -> req.headers(headers -> {
-                                                    headers.add("X-User-Id", userId);
-                                                    headers.add("X-User-Name", username);
-                                                    headers.add("X-User-Roles", String.join(",", userRoles));
+                                                    headers.add(Constants.X_USER_ID, userId);
+                                                    headers.add(Constants.X_USERNAME, username);
+                                                    headers.add(Constants.X_USER_ROLES, String.join(",", userRoles));
                                                 }))
                                                 .build();
 
