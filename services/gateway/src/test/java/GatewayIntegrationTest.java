@@ -78,7 +78,7 @@ public class GatewayIntegrationTest {
         when(tokenManager.isAccessTokenValid(token)).thenReturn(Mono.just(true));
         when(tokenManager.extractId(token)).thenReturn(Mono.just("1"));
         when(tokenManager.extractUsername(token)).thenReturn(Mono.just("test_user"));
-        when(tokenManager.extractRoles(token)).thenReturn(Mono.just(List.of("ROLE_USER")));
+        // when(tokenManager.extractRoles(token)).thenReturn(Mono.just(List.of("ROLE_USER")));
 
         mockAuthService.enqueue(new MockResponse()
                 .setResponseCode(200)

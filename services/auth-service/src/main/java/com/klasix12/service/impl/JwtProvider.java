@@ -1,6 +1,7 @@
 package com.klasix12.service.impl;
 
 import com.klasix12.dto.Constants;
+import com.klasix12.dto.Role;
 import com.klasix12.dto.UserDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -59,7 +60,7 @@ public class JwtProvider {
                 .email((String) claims.get("email"))
                 .username(claims.getSubject())
                 .name((String) claims.get("name"))
-                .roles((List<String>) claims.get("roles"))
+                .roles((List<Role>) claims.get("roles"))
                 .build();
     }
 

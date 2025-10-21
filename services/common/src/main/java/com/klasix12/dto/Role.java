@@ -1,6 +1,6 @@
 package com.klasix12.dto;
 
-public enum RoleName {
+public enum Role {
     USER,
     MODERATOR,
     ADMIN

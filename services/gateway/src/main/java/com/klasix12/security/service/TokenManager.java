@@ -2,6 +2,7 @@
 
 package com.klasix12.security.service;
 
+import com.klasix12.dto.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -16,7 +17,6 @@ public class TokenManager {
     private final JwtProvider jwtProvider;
 
     public Mono<Boolean> isAccessTokenValid(String token) {
-        System.out.println("isAccessTokenValid");
         return Mono.fromCallable(() -> {
             if (jwtProvider.isTokenExpired(token)) {
                 return false;
@@ -25,21 +25,7 @@ public class TokenManager {
         }).subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<Boolean> isRefreshTokenValid(String refreshToken) {
-        return Mono.fromCallable(() -> {
-            if (jwtProvider.isTokenExpired(refreshToken) || !jwtProvider.validateToken(refreshToken)) {
-                return false;
-            }
-            return jwtProvider.extractId(refreshToken);
-        }).flatMap(tokenId -> {
-            if (tokenId == null) {
-                return Mono.just(false);
-            }
-            return Mono.just(true);
-        }).subscribeOn(Schedulers.boundedElastic());
-    }
-
-    public Mono<String> extractId(String token) {
+    public Mono<Long> extractId(String token) {
         return Mono.fromCallable(() -> jwtProvider.extractId(token))
                 .subscribeOn(Schedulers.boundedElastic());
     }
@@ -49,7 +35,7 @@ public class TokenManager {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<List<String>> extractRoles(String token) {
+    public Mono<List<Role>> extractRoles(String token) {
         return Mono.fromCallable(() -> jwtProvider.extractAuthorities(token))
                 .subscribeOn(Schedulers.boundedElastic());
     }

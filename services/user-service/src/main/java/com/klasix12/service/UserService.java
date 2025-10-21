@@ -1,10 +1,9 @@
 package com.klasix12.service;
 
 import com.klasix12.dto.AuthRequest;
-import com.klasix12.dto.RoleName;
+import com.klasix12.dto.Role;
 import com.klasix12.dto.UserDto;
 import com.klasix12.dto.UserRegistrationRequest;
-import com.klasix12.model.Role;
 import com.klasix12.model.User;
 import com.klasix12.repository.RoleRepository;
 import com.klasix12.repository.UserRepository;
@@ -32,14 +31,14 @@ public class UserService {
                 .name(user.getFirstName())
                 .roles(user.getRoles()
                         .stream()
-                        .map(r -> r.getName().toString())
+                        .map(com.klasix12.model.Role::getName)
                         .toList())
                 .build();
     }
 
     @Transactional
     public UserDto registerUser(UserRegistrationRequest request) {
-        Role role = roleRepository.findByName(RoleName.USER);
+        com.klasix12.model.Role role = roleRepository.findByName(Role.USER);
         User user = userRepository.save(User.builder()
                 .username(request.getUsername())
                 .password(request.getPassword())

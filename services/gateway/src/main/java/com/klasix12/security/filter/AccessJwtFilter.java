@@ -2,6 +2,7 @@ package com.klasix12.security.filter;
 
 import com.klasix12.config.PublicEndpointsConfig;
 import com.klasix12.dto.Constants;
+import com.klasix12.dto.Role;
 import com.klasix12.redis.RedisService;
 import com.klasix12.security.service.TokenManager;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -45,8 +47,6 @@ public class AccessJwtFilter implements GlobalFilter {
         String token = authHeaderValue.substring(tokenPrefix.length());
         String blacklistKey = Constants.ACCESS_TOKEN_BLACKLIST_PREFIX + token;
 
-        System.out.println(blacklistKey);
-
         return redisService.exists(blacklistKey)
                 .flatMap(isBlacklisted -> {
                     if (Boolean.TRUE.equals(isBlacklisted)) {
@@ -61,15 +61,15 @@ public class AccessJwtFilter implements GlobalFilter {
                                             tokenManager.extractUsername(token),
                                             tokenManager.extractRoles(token)
                                     ).flatMap(tuple -> {
-                                        String userId = tuple.getT1();
+                                        Long userId = tuple.getT1();
                                         String username = tuple.getT2();
-                                        List<String> userRoles = tuple.getT3();
+                                        List<Role> userRoles = tuple.getT3();
 
                                         ServerWebExchange mutated = exchange.mutate()
                                                 .request(req -> req.headers(headers -> {
-                                                    headers.add(Constants.X_USER_ID, userId);
+                                                    headers.add(Constants.X_USER_ID, String.valueOf(userId));
                                                     headers.add(Constants.X_USERNAME, username);
-                                                    headers.add(Constants.X_USER_ROLES, String.join(",", userRoles));
+                                                    headers.add(Constants.X_USER_ROLES, userRoles.stream().map(Role::toString).collect(Collectors.joining(",")));
                                                 }))
                                                 .build();
 
@@ -101,14 +101,15 @@ public class AccessJwtFilter implements GlobalFilter {
                     .map(parser::parse)
                     .anyMatch(pattern -> pattern.matches(path));
         }
-        return true;
+        return false;
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        response.getHeaders().set("Content-Type", "application/json; charset=UTF-8");
         byte[] bytes = ("{\"error\":\"" + message + "\"}").getBytes(StandardCharsets.UTF_8);
-        response.getHeaders().add("Content-Type", "application/json");
-        return response.writeWith(Mono.just(response.bufferFactory().wrap(bytes)));
+        return response.writeWith(Mono.just(response.bufferFactory().wrap(bytes)))
+                .then(response.setComplete());
     }
 }

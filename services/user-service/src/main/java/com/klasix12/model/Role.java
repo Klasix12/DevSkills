@@ -1,6 +1,5 @@
 package com.klasix12.model;
 
-import com.klasix12.dto.RoleName;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +17,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private RoleName name;
+    private com.klasix12.dto.Role name;
 
     private String description;
 }

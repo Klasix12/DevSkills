@@ -1,6 +1,7 @@
 package com.klasix12.security.service;
 
 import com.klasix12.dto.Constants;
+import com.klasix12.dto.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -55,13 +57,20 @@ public class JwtProvider {
         return extractAllClaims(token).getSubject();
     }
 
-    public String extractId(String token) {
-        return extractAllClaims(token).getId();
+    public Long extractId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
     }
 
-    public List<String> extractAuthorities(String token) {
+    public List<Role> extractAuthorities(String token) {
         Claims claims = extractAllClaims(token);
-
-        return claims.get("roles", List.class);
+        List<Role> roles = new ArrayList<>();
+        Object rolesClaims = claims.get("roles");
+        if (rolesClaims instanceof List<?>) {
+            for (Object role : (List<?>) rolesClaims) {
+                roles.add(Role.valueOf(String.valueOf(role)));
+            }
+            return roles;
+        }
+        return List.of(Role.USER);
     }
 }
