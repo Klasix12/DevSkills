@@ -6,11 +6,7 @@ spring:
         response-timeout: 5s
         pool:
           max-idle-time: 5s
-      routes:
-        - id: example
-          uri: http://localhost:8081
-          predicates:
-            - Path=/**
+
   main:
     web-application-type: reactive
   data:

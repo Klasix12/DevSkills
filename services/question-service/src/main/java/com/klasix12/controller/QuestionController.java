@@ -1,14 +1,12 @@
 package com.klasix12.controller;
 
 import com.klasix12.context.UserContext;
-import com.klasix12.dto.Constants;
+import com.klasix12.dto.question.QuestionDto;
+import com.klasix12.model.question.Question;
 import com.klasix12.resolver.CurrentUser;
 import com.klasix12.service.QuestionService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/question")
@@ -17,8 +15,13 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping("/{id}")
-    public UserContext getQuestion(@PathVariable int id, @CurrentUser UserContext user) {
-        System.out.println(user);
-        return user;
+    public Question getQuestion(@PathVariable Long id,
+                                @CurrentUser UserContext user) {
+        return questionService.getQuestionById(id, user);
+    }
+
+    @PostMapping
+    public QuestionDto addQuestion(@CurrentUser UserContext user) {
+        return questionService.addQuestion(user);
     }
 }

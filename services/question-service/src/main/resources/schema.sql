@@ -92,4 +92,8 @@ CREATE TABLE IF NOT EXISTS question_tags (
     PRIMARY KEY (question_id, tag_id),
     FOREIGN KEY (question_id) REFERENCES questions(id),
     FOREIGN KEY (tag_id) REFERENCES tags(id)
+);
+
+CREATE TABLE IF NOT EXISTS user_answers (
+
 )

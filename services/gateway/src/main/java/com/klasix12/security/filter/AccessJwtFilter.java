@@ -67,12 +67,12 @@ public class AccessJwtFilter implements GlobalFilter {
 
                                         ServerWebExchange mutated = exchange.mutate()
                                                 .request(req -> req.headers(headers -> {
-                                                    headers.add(Constants.X_USER_ID, String.valueOf(userId));
-                                                    headers.add(Constants.X_USERNAME, username);
-                                                    headers.add(Constants.X_USER_ROLES, userRoles.stream().map(Role::toString).collect(Collectors.joining(",")));
+                                                    headers.set(Constants.X_USER_ID, String.valueOf(userId));
+                                                    headers.set(Constants.X_USERNAME, username);
+                                                    headers.set(Constants.X_USER_ROLES, userRoles.stream().map(Role::toString).collect(Collectors.joining(",")));
                                                 }))
                                                 .build();
-
+                                        System.out.println(exchange.getRequest().getURI());
                                         return chain.filter(mutated);
                                     });
                                 } else {

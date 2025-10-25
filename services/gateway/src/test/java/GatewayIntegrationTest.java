@@ -1,5 +1,5 @@
 import com.klasix12.GatewayApplication;
-import com.klasix12.config.routes.AuthRoutesConfig;
+import com.klasix12.config.routes.RoutesConfig;
 import com.klasix12.redis.RedisService;
 import com.klasix12.security.service.TokenManager;
 import okhttp3.mockwebserver.MockResponse;
@@ -17,7 +17,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -27,7 +26,7 @@ import static org.mockito.Mockito.when;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureWebTestClient
-@Import(AuthRoutesConfig.class)
+@Import(RoutesConfig.class)
 public class GatewayIntegrationTest {
 
     @Autowired

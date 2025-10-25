@@ -1,7 +1,7 @@
 package com.klasix12.model.question;
 
-import com.klasix12.dto.Difficulty;
-import com.klasix12.dto.QuestionType;
+import com.klasix12.dto.question.Difficulty;
+import com.klasix12.dto.question.QuestionType;
 import com.klasix12.model.Tag;
 import com.klasix12.model.User;
 import jakarta.persistence.*;

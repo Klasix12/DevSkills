@@ -10,4 +10,8 @@ public class UserContext {
     private Long userId;
     private String username;
     private List<Role> roles;
+
+    public boolean isPresent() {
+        return userId != null && username != null && roles != null;
+    }
 }
