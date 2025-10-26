@@ -9,10 +9,12 @@ import com.klasix12.exception.NotFoundException;
 import com.klasix12.mapper.QuestionMapper;
 import com.klasix12.model.Tag;
 import com.klasix12.model.User;
+import com.klasix12.model.answer.UserAnswer;
 import com.klasix12.model.question.FreeTextQuestion;
 import com.klasix12.model.question.Question;
 import com.klasix12.repository.QuestionRepository;
 import com.klasix12.repository.TagsRepository;
+import com.klasix12.repository.UserAnswerRepository;
 import com.klasix12.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,6 +33,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final TagsRepository tagsRepository;
+    private final UserAnswerRepository userAnswerRepository;
     /*
     такс такс такс что тут у нас
     Вопросы:
@@ -44,7 +48,7 @@ public class QuestionService {
      */
 
     @Transactional
-    public Question getQuestionById(Long id, UserContext user) {
+    public QuestionDto getQuestionById(Long id, UserContext user) {
         /*
         1. Получаем вопрос
         2. Проверяем, отвечал ли на него пользователь
@@ -55,7 +59,8 @@ public class QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Question not found"));
 
-        return question;
+
+        return QuestionMapper.toDto();
     }
 
     @Transactional
@@ -85,6 +90,6 @@ public class QuestionService {
         question.setTags(List.of(newTag));
         questionRepository.save(question);
 
-        return QuestionMapper.toDto(question, "penis");
+        return QuestionMapper.toDto(question, );
     }
 }

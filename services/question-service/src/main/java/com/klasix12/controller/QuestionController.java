@@ -15,7 +15,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping("/{id}")
-    public Question getQuestion(@PathVariable Long id,
+    public QuestionDto getQuestion(@PathVariable Long id,
                                 @CurrentUser UserContext user) {
         return questionService.getQuestionById(id, user);
     }

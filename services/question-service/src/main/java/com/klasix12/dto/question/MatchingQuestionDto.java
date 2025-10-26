@@ -1,9 +1,11 @@
 package com.klasix12.dto.question;
 
 import com.klasix12.dto.*;
+import lombok.Builder;
 
 import java.util.List;
 
+@Builder
 public record MatchingQuestionDto(
         Long id,
         String title,

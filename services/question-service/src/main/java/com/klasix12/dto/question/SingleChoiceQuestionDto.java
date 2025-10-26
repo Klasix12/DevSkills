@@ -1,9 +1,11 @@
 package com.klasix12.dto.question;
 
 import com.klasix12.dto.*;
+import lombok.Builder;
 
 import java.util.List;
 
+@Builder
 public record SingleChoiceQuestionDto(
         Long id,
         String title,
@@ -16,5 +18,5 @@ public record SingleChoiceQuestionDto(
         List<TagDto> tags,
         List<OptionDto> options,
         Integer correctOptionIndex,
-        Integer userOptionIndex
+        OptionDto userOption
 ) implements QuestionDto {}

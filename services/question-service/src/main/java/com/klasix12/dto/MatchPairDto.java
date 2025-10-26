@@ -1,5 +1,10 @@
 package com.klasix12.dto;
 
-public class MatchPairDto {
+import lombok.Builder;
 
+@Builder
+public class MatchPairDto {
+    private Long id;
+    private String leftText;
+    private String rightText;
 }

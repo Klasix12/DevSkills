@@ -2,9 +2,12 @@ package com.klasix12.dto.question;
 
 import com.klasix12.dto.TagDto;
 import com.klasix12.dto.UserDto;
+import lombok.Builder;
+import lombok.Setter;
 
 import java.util.List;
 
+@Builder
 public record FreeTextQuestionDto(
         Long id,
         String title,
