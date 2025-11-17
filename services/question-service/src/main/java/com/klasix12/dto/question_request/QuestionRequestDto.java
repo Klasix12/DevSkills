@@ -4,8 +4,6 @@ package com.klasix12.dto.question_request;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.klasix12.dto.question.Difficulty;
-import com.klasix12.dto.question.FreeTextQuestionDto;
-import com.klasix12.dto.question.MultipleChoiceQuestionDto;
 import com.klasix12.dto.question.QuestionType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

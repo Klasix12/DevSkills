@@ -4,7 +4,6 @@ import com.klasix12.dto.OptionDto;
 import com.klasix12.dto.TagDto;
 import com.klasix12.dto.UserDto;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 

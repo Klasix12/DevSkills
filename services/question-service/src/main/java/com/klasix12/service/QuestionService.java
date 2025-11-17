@@ -1,14 +1,10 @@
 package com.klasix12.service;
 
 import com.klasix12.context.UserContext;
-import com.klasix12.dto.question.MultipleChoiceQuestionDto;
 import com.klasix12.dto.question.QuestionDto;
-import com.klasix12.dto.question.SingleChoiceQuestionDto;
 import com.klasix12.dto.question_request.*;
 import com.klasix12.exception.NotFoundException;
-import com.klasix12.mapper.OptionMapper;
 import com.klasix12.mapper.QuestionMapper;
-import com.klasix12.mapper.TagMapper;
 import com.klasix12.mapper.UserMapper;
 import com.klasix12.model.MatchPair;
 import com.klasix12.model.Option;
@@ -16,16 +12,18 @@ import com.klasix12.model.Tag;
 import com.klasix12.model.User;
 import com.klasix12.model.answer.UserAnswer;
 import com.klasix12.model.question.*;
-import com.klasix12.repository.*;
+import com.klasix12.repository.QuestionRepository;
+import com.klasix12.repository.TagsRepository;
+import com.klasix12.repository.UserAnswerRepository;
+import com.klasix12.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.service.RequestBodyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
