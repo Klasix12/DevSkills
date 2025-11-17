@@ -37,18 +37,6 @@ public class QuestionService {
     private final TagsRepository tagsRepository;
     private final UserAnswerRepository userAnswerRepository;
 
-    /*
-    такс такс такс что тут у нас
-    Вопросы:
-    получение всех вопросов постранично
-    получение одного вопроса
-    получение ответов на вопрос
-
-    получение всех тегов
-    получение вопросов по тегам (одному и нескольким)
-
-    с получением больше одного вопроса прикрутить ко всему сортировку (даты, рейтинг, просмотры)
-     */
 
     @Transactional
     public QuestionDto getQuestionById(Long id, UserContext userContext) {
@@ -82,7 +70,8 @@ public class QuestionService {
     @Transactional
     public QuestionDto addQuestion(QuestionRequestDto questionRequest, UserContext userContext) {
         log.info("Saving question: {}, user: {}", questionRequest, userContext);
-        User user = userRepository.save(UserMapper.toEntity(userContext));
+        User user = userRepository.findById(userContext.getUserId())
+                .orElseGet(() -> userRepository.save(UserMapper.toEntity(userContext)));
         List<Tag> tags = tagsRepository.findAllById(questionRequest.getTagIds());
         switch (questionRequest.getQuestionType()) {
             case SINGLE_CHOICE:
