@@ -11,12 +11,22 @@ public sealed interface QuestionDto permits
         MatchingQuestionDto,
         FreeTextQuestionDto {
     Long id();
+
     String title();
+
     String body();
+
     Difficulty difficulty();
+
+    Boolean approved();
+
     QuestionType questionType();
+
     Integer rating();
+
     Integer views();
+
     UserDto author();
+
     List<TagDto> tags();
 }

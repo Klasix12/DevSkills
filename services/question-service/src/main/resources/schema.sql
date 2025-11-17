@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS user_match_pairs;
+DROP TABLE IF EXISTS user_matching_answers;
+DROP TABLE IF EXISTS user_free_text_answers;
+DROP TABLE IF EXISTS user_multiple_choice_selected_options;
+DROP TABLE IF EXISTS question_tags;
+DROP TABLE IF EXISTS user_multiple_choice_answers;
+DROP TABLE IF EXISTS user_single_choice_answers;
+DROP TABLE IF EXISTS user_answers;
 DROP TABLE IF EXISTS question_tags;
 DROP TABLE IF EXISTS options;
 DROP TABLE IF EXISTS match_pairs;

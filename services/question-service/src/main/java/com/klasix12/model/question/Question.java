@@ -41,10 +41,10 @@ public class Question {
     private QuestionType type;
 
     @Column(name = "rating")
-    private Integer rating;
+    private Integer rating = 0;
 
     @Column(name = "views")
-    private Integer views;
+    private Integer views = 0;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

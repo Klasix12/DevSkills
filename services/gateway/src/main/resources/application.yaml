@@ -31,8 +31,7 @@ security:
       - /v3/api-docs/**
       - /v3/api-docs.yaml
     get-only:
-      - /questions/*
-      - /questions/*/answer
-      - /questions/*/comments
-      - /topic
-      - /topic/*
+      - /question/*
+      - /question/*/answer
+      - /question/*/comments
+      - /tags

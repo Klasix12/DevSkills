@@ -1,7 +1,10 @@
 package com.klasix12.dto.question;
 
-import com.klasix12.dto.*;
+import com.klasix12.dto.OptionDto;
+import com.klasix12.dto.TagDto;
+import com.klasix12.dto.UserDto;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -11,6 +14,7 @@ public record SingleChoiceQuestionDto(
         String title,
         String body,
         Difficulty difficulty,
+        Boolean approved,
         QuestionType questionType,
         Integer rating,
         Integer views,
@@ -19,4 +23,5 @@ public record SingleChoiceQuestionDto(
         List<OptionDto> options,
         Integer correctOptionIndex,
         OptionDto userOption
-) implements QuestionDto {}
+) implements QuestionDto {
+}

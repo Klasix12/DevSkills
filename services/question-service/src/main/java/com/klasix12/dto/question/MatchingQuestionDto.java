@@ -1,6 +1,8 @@
 package com.klasix12.dto.question;
 
-import com.klasix12.dto.*;
+import com.klasix12.dto.MatchPairDto;
+import com.klasix12.dto.TagDto;
+import com.klasix12.dto.UserDto;
 import lombok.Builder;
 
 import java.util.List;
@@ -11,6 +13,7 @@ public record MatchingQuestionDto(
         String title,
         String body,
         Difficulty difficulty,
+        Boolean approved,
         QuestionType questionType,
         Integer rating,
         Integer views,
@@ -18,4 +21,5 @@ public record MatchingQuestionDto(
         List<TagDto> tags,
         List<MatchPairDto> pairs,
         List<MatchPairDto> userPairs
-) implements QuestionDto {}
+) implements QuestionDto {
+}

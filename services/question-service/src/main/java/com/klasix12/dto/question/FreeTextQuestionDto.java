@@ -3,7 +3,6 @@ package com.klasix12.dto.question;
 import com.klasix12.dto.TagDto;
 import com.klasix12.dto.UserDto;
 import lombok.Builder;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -13,6 +12,7 @@ public record FreeTextQuestionDto(
         String title,
         String body,
         Difficulty difficulty,
+        Boolean approved,
         QuestionType questionType,
         Integer rating,
         Integer views,
@@ -20,4 +20,5 @@ public record FreeTextQuestionDto(
         List<TagDto> tags,
         String correctAnswer,
         String userAnswer
-) implements QuestionDto {}
+) implements QuestionDto {
+}

@@ -91,6 +91,4 @@ public class QuestionMapper {
                 .userAnswer(answer instanceof UserFreeTextAnswer a ? a.getAnswer() : null)
                 .build();
     }
-
-
 }
