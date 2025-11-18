@@ -5,8 +5,10 @@ import com.klasix12.dto.question.QuestionDto;
 import com.klasix12.dto.question_request.QuestionRequestDto;
 import com.klasix12.resolver.CurrentUser;
 import com.klasix12.service.QuestionService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +26,8 @@ public class QuestionController {
     }
 
     @PostMapping
-    public QuestionDto addQuestion(@RequestBody QuestionRequestDto questionRequestDto,
+    @ResponseStatus(HttpStatus.CREATED)
+    public QuestionDto addQuestion(@Valid @RequestBody QuestionRequestDto questionRequestDto,
                                    @CurrentUser UserContext user) {
         return questionService.addQuestion(questionRequestDto, user);
     }

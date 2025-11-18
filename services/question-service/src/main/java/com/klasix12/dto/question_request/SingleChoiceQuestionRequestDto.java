@@ -2,15 +2,15 @@ package com.klasix12.dto.question_request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public final class SingleChoiceQuestionRequestDto extends QuestionRequestDto {
     @NotNull(message = "Ответы на вопрос не должны быть пустыми")
     @Size(min = 2, max = 10, message = "Ответов на вопрос должно быть от 2 до 10")
