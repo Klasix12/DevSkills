@@ -71,46 +71,67 @@ public class QuestionService {
         User user = userRepository.findById(userContext.getUserId())
                 .orElseGet(() -> userRepository.save(UserMapper.toEntity(userContext)));
         List<Tag> tags = tagsRepository.findAllById(questionRequest.getTagIds());
-        switch (questionRequest.getQuestionType()) {
-            case SINGLE_CHOICE:
-                SingleChoiceQuestion singleQuestion = (SingleChoiceQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
-                int correctIndex = questionRequest instanceof SingleChoiceQuestionRequestDto q ? q.getCorrectOptionIndex() : -1;
-                if (correctIndex == -1) {
-                    throw new RuntimeException("Incorrect correct index");
-                }
-                singleQuestion.setCorrectOptionIndex(correctIndex);
-                singleQuestion.setOptions(extractOptions(questionRequest, singleQuestion));
-                return QuestionMapper.toDto(questionRepository.save(singleQuestion));
-            case MULTIPLE_CHOICE:
-                MultipleChoiceQuestion multipleQuestion = (MultipleChoiceQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
-                List<Integer> correctIndexes = questionRequest instanceof MultipleChoiceQuestionRequestDto q ? q.getCorrectOptionIndexes() : null;
-                if (correctIndexes == null || correctIndexes.isEmpty()) {
-                    throw new RuntimeException("Incorrect correct indexes");
-                }
-                multipleQuestion.setCorrectOptionIndexes(correctIndexes);
-                multipleQuestion.setOptions(extractOptions(questionRequest, multipleQuestion));
-                return QuestionMapper.toDto(questionRepository.save(multipleQuestion));
-            case MATCHING:
-                MatchingQuestion matchingQuestion = (MatchingQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
-                Map<String, String> pairs = questionRequest instanceof MatchingQuestionRequestDto q ? q.getPairs() : null;
-                if (pairs == null || pairs.isEmpty()) {
-                    throw new RuntimeException("Incorrect pairs");
-                }
-                List<MatchPair> matchPairs = createMatchPairs(pairs, matchingQuestion);
-                matchingQuestion.setParis(matchPairs);
-                return QuestionMapper.toDto(questionRepository.save(matchingQuestion));
-            case FREE_TEXT:
-                FreeTextQuestion freeTextQuestion = (FreeTextQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
-                String answer = questionRequest instanceof FreeTextQuestionRequestDto q ? q.getAnswer() : null;
-                if (answer == null || answer.isEmpty()) {
-                    throw new RuntimeException("Incorrect answer");
-                }
-                freeTextQuestion.setCorrectAnswer(answer);
-                return QuestionMapper.toDto(questionRepository.save(freeTextQuestion));
-            default:
-                throw new RuntimeException("Unknown question type");
-        }
+        return switch (questionRequest.getQuestionType()) {
+            case SINGLE_CHOICE -> QuestionMapper.toDto(saveSingleChoiceQuestion(questionRequest, user, tags));
+            case MULTIPLE_CHOICE -> QuestionMapper.toDto(saveMultipleChoiceQuestion(questionRequest, user, tags));
+            case MATCHING -> QuestionMapper.toDto(saveMatchingQuestion(questionRequest, user, tags));
+            case FREE_TEXT -> QuestionMapper.toDto(saveFreeTextQuestion(questionRequest, user, tags));
+        };
     }
+
+    private FreeTextQuestion saveFreeTextQuestion(QuestionRequestDto questionRequest, User user, List<Tag> tags) {
+        FreeTextQuestion question = (FreeTextQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
+        String answer = questionRequest instanceof FreeTextQuestionRequestDto q ? q.getAnswer() : null;
+        if (answer == null || answer.isEmpty()) {
+            log.warn("Not correct answer for request: {}", questionRequest);
+            throw new RuntimeException("Incorrect answer");
+        }
+        question.setCorrectAnswer(answer);
+        return saveAndLog(question);
+    }
+
+    private MatchingQuestion saveMatchingQuestion(QuestionRequestDto questionRequest, User user, List<Tag> tags) {
+        MatchingQuestion question = (MatchingQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
+        Map<String, String> pairs = questionRequest instanceof MatchingQuestionRequestDto q ? q.getPairs() : null;
+        if (pairs == null || pairs.isEmpty()) {
+            log.warn("Not correct pairs for request: {}", questionRequest);
+            throw new RuntimeException("Incorrect pairs");
+        }
+        List<MatchPair> matchPairs = createMatchPairs(pairs, question);
+        question.setParis(matchPairs);
+        return saveAndLog(question);
+    }
+
+    private MultipleChoiceQuestion saveMultipleChoiceQuestion(QuestionRequestDto questionRequest, User user, List<Tag> tags) {
+        MultipleChoiceQuestion question = (MultipleChoiceQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
+        List<Integer> correctIndexes = questionRequest instanceof MultipleChoiceQuestionRequestDto q ? q.getCorrectOptionIndexes() : null;
+        if (correctIndexes == null || correctIndexes.isEmpty()) {
+            log.warn("Not correct indexes for question request: {}", questionRequest);
+            throw new RuntimeException("Incorrect correct indexes");
+        }
+        question.setCorrectOptionIndexes(correctIndexes);
+        question.setOptions(extractOptions(questionRequest, question));
+        return saveAndLog(question);
+    }
+
+    private SingleChoiceQuestion saveSingleChoiceQuestion(QuestionRequestDto questionRequest, User user, List<Tag> tags) {
+        SingleChoiceQuestion question = (SingleChoiceQuestion) QuestionFabric.createQuestionFromQuestionRequest(questionRequest, user, tags);
+        int correctIndex = questionRequest instanceof SingleChoiceQuestionRequestDto q ? q.getCorrectOptionIndex() : -1;
+        if (correctIndex == -1) {
+            log.warn("Not correct index for question request: {}", questionRequest);
+            throw new RuntimeException("Incorrect correct index");
+        }
+        question.setCorrectOptionIndex(correctIndex);
+        question.setOptions(extractOptions(questionRequest, question));
+        return saveAndLog(question);
+    }
+
+    private <T extends Question> T saveAndLog(T question) {
+        T savedQuestion = questionRepository.save(question);
+        log.info("Saved question: {}", savedQuestion);
+        return savedQuestion;
+    }
+
 
     private List<MatchPair> createMatchPairs(Map<String, String> pairs, Question question) {
         return pairs.entrySet().stream()
